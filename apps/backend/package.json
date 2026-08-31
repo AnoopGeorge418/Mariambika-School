@@ -1,0 +1,9 @@
+{
+  "name": "backend",
+  "private": true,
+  "scripts": {
+    "dev": "uv run poe dev",
+    "checks": "uv run poe checks",
+    "styles": "uv run poe styles"
+  }
+}

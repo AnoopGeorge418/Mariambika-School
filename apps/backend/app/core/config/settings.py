@@ -1,0 +1,54 @@
+from functools import lru_cache
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    """Application settings, populated from environment variables / .env file."""
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        env_prefix="MARIAMBIKA_",
+        extra="ignore",
+    )
+
+    APP_NAME: str
+    APP_DESCRIPTION: str
+    APP_VERSION: str
+    APP_ENVIRONMENT: str
+
+    SERVER_NAME: str
+    SERVER_PATH: str
+    SERVER_HOST: str
+    SERVER_PORT: int
+    SERVER_RELOAD: bool
+    SERVER_BASE_API: str
+
+    DATABASE_LOCAL_NAME: str
+    DATABASE_LOCAL_URL: str
+    DATABASE_PRODUCTION_NAME: str
+    DATABASE_PRODUCTION_URL: str
+    DATABASE_AUTO_COMMIT: bool
+    DATABASE_AUTO_FLUSH: bool
+    DATABASE_ECHO_LOGS: bool
+
+    @property
+    def switch_db_using_env(self) -> str:
+        if self.APP_ENVIRONMENT == "dev":
+            return self.DATABASE_LOCAL_URL
+
+        elif self.APP_ENVIRONMENT == "prod":
+            return self.DATABASE_PRODUCTION_URL
+
+        raise ValueError(
+            f"Invalid APP_ENVIRONMENT: {self.APP_ENVIRONMENT}. Expected 'dev' or 'prod'."
+        )
+
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()  # type: ignore
+
+
+APP_SETTINGS = get_settings()
