@@ -1,9 +1,12 @@
+import { Route, Routes } from "react-router";
+import Login from "./features/auth/login";
+
 const App = () => {
 	return (
-		<div className="flex justify-center items-center min-h-screen bg-gray-200">
-			<h1 className="text-9xl text-blue-300 font-lora">Admin Panel</h1>
-		</div>
+        <Routes>
+            <Route path="/" element={ <Login /> } />
+		</Routes>
 	);
-}
+};
 
 export default App;
