@@ -1,10 +1,10 @@
-import { Route, Routes } from "react-router";
-import Login from "./features/auth/login";
+import { Route, Routes } from 'react-router';
+import Login from './features/auth/login';
 
 const App = () => {
 	return (
-        <Routes>
-            <Route path="/" element={ <Login /> } />
+		<Routes>
+			<Route path="/" element={<Login />} />
 		</Routes>
 	);
 };
