@@ -1,0 +1,45 @@
+name: CD
+
+run-name: CD Deploy triggered by CI on @${{ github.actor }}
+
+permissions:
+    contents: read
+
+on: 
+    workflow_run:
+        workflows:
+          - CI
+        types:
+          - completed
+        branches:
+          - main
+
+jobs:
+  deploy-frontend:
+    if: github.event.workflow_run.conclusion == "success"
+    runs-on: ubuntu-latest
+    steps:
+      - run: curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}"
+
+  trigger-db-migration:
+      if: github.event.workflow_run.conclusion == 'success'
+      runs-on: ubuntu-latest
+      defaults:
+        run:
+            shell: bash
+            working-directory: apps/backend
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      steps:
+        - uses: actions/checkout@v4
+        - uses: astral-sh/setup-uv@v3
+        - run: uv sync
+        - run: uv run poe upgrade
+        
+  trigger_render_deploy:
+      needs: trigger-db-migration
+      if: needs.trigger-db-migration.result == 'success'
+      runs-on: ubuntu-latest
+      steps:
+        - run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+      

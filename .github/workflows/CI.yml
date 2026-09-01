@@ -1,0 +1,69 @@
+name: CI 
+
+run-name: CI tests on codebase by @${{ github.actor }}
+
+permissions:
+    contents: read
+    
+on: 
+    pull_request:
+        branches:
+          - "main"
+    push:
+        branches:
+          - "main"
+
+defaults:
+    run:
+        shell: bash
+        working-directory: .
+
+jobs:
+  lint:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4 # accessing codebase
+        - uses: oven-sh/setup-bun@v2 # installing bun
+        - run: bun install
+        - run: bunx turbo run lint-check
+
+  format:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - uses: oven-sh/setup-bun@v2
+        - run: bun install
+        - run: bunx turbo run format-check
+        
+  typecheck:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - uses: oven-sh/setup-bun@v2
+        - run: bun install
+        - run: bunx turbo run checktypes
+        
+  test:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - uses: oven-sh/setup-bun@v2
+        - run: bun install
+        - run: bunx turbo run test || echo "no tests yet"
+          continue-on-error: true  
+
+  backend:
+      runs-on: ubuntu-latest
+      defaults:
+        run:
+            working-directory: apps/backend
+      steps:
+        - uses: actions/checkout@v4
+        - uses: astral-sh/setup-uv@v3
+        - run: uv sync
+        - run: uv run poe checks
+        - run: uv run poe test || echo "no tests yet"
+          continue-on-error: true  
+    
+        
+    
