@@ -28,11 +28,11 @@ jobs:
         run:
             shell: bash
             working-directory: apps/backend
-      env:
-        MARIAMBIKA_DATABASE_PRODUCTION_URL: ${{ secrets.DATABASE_URL }}
       steps:
         - uses: actions/checkout@v4
         - uses: astral-sh/setup-uv@v3
+        - name: Write production .env
+          run: echo "${{ secrets.BACKEND_ENV_PROD_SECRETS }}" > .env  
         - run: uv sync
         - run: uv run poe upgrade
         
