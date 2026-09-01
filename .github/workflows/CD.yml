@@ -19,7 +19,7 @@ jobs:
     if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
-      - run: curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"
+      - run: curl -X POST "${{ secrets.VERCAL_DEPLOY_HOOK }}"
 
   trigger-db-migration:
       if: github.event.workflow_run.conclusion == 'success'
