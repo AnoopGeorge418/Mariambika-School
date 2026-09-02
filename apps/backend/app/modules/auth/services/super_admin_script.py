@@ -38,7 +38,7 @@ class CreateSuperAdmin:
     async def check_super_admin(self):
         """Returns True if a SUPER_ADMIN already exists"""
 
-        return await SuperAdminRepo.check_super_admin(self.db)
+        return await SuperAdminRepo.get_super_admin(self.db)
 
     async def create_super_admin(self):
         """Creates SUPER_ADMIN only if one does not already exist."""
