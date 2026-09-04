@@ -25,15 +25,20 @@ class AdminPermission(Base):
     )
 
     assigned_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False, default=func.now
+        DateTime(timezone=True),
+        nullable=False,
+        default=func.now(),
+        server_default=func.now(),
     )
 
-    assigned_by: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("admins.id"), nullable=False
+    assigned_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("admins.id"), nullable=True
     )
 
     admin: Mapped["Admins"] = relationship(
-        foreign_keys=[admin_id], back_populates="permission_links"
+        foreign_keys=[admin_id], back_populates="admin_permissions"
     )
     permission: Mapped["Permissions"] = relationship(foreign_keys=[permission_id])
-    assigned_by_admin: Mapped["Admins"] = relationship(foreign_keys=[assigned_by])
+    assigned_by_admin: Mapped["Admins | None"] = relationship(
+        foreign_keys=[assigned_by]
+    )
