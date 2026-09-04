@@ -66,7 +66,9 @@ class Admins(Base):
     )
 
     permission: Mapped[list["AdminPermission"]] = relationship(
-        foreign_keys="[AdminPermission.admin_id]", back_populates="admins"
+        foreign_keys="[AdminPermission.admin_id]",
+        back_populates="admin",
+        cascade="all, delete-orphan",
     )
     sessions: Mapped[list["Sessions"]] = relationship(
         back_populates="admin", cascade="all, delete-orphan"

@@ -38,7 +38,7 @@ class Permissions(Base):
         server_default=func.now(),
     )
 
-    admin: Mapped[list["AdminPermission"]] = relationship(back_populates="permissions")
+    admin: Mapped[list["AdminPermission"]] = relationship(back_populates="permission")
 
     def __str__(self) -> str:
         return f"{self.resource.value}:{self.action.value}"

@@ -15,3 +15,9 @@ class AdminCreateSchema(BaseModel):
     is_active: bool
     is_verified: bool
     permissions: list[uuid.UUID] = []
+
+
+class AdminPermissionSchema(BaseModel):
+    admin_id: uuid.UUID
+    permission_id: uuid.UUID
+    assigned_by: str

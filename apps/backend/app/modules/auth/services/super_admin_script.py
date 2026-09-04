@@ -5,7 +5,10 @@ from typing import final
 from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.modules.auth.models.admins_model import AuthRoles
 from app.modules.auth.repositories.super_admin_repo import SuperAdminRepo
+from app.modules.auth.schemas.admin_schema import AdminCreateSchema
+from app.utils.password import PasswordUtility
 
 
 @final
@@ -25,6 +28,8 @@ class CreateSuperAdmin:
         self.email: str = self._required_env("MARIAMBIKA_SUPER_ADMIN_EMAIL")
         self.username: str = self._required_env("MARIAMBIKA_SUPER_ADMIN_USERNAME")
         self.password: str = self._required_env("MARIAMBIKA_SUPER_ADMIN_PASSWORD")
+        self.firstname: str = self._required_env("MARIAMBIKA_SUPER_ADMIN_FIRSTNAME")
+        self.lastname: str = self._required_env("MARIAMBIKA_SUPER_ADMIN_LASTNAME")
 
     @staticmethod
     def _required_env(name: str) -> str:
@@ -43,7 +48,27 @@ class CreateSuperAdmin:
     async def create_super_admin(self):
         """Creates SUPER_ADMIN only if one does not already exist."""
 
-        if await self.check_super_admin() == True:
+        if await self.check_super_admin():
             raise RuntimeError("SUPER_ADMIN already exists. Bootstrap aborted.")
 
+        password = self.password
+        hashed_pass = PasswordUtility.hash_password(password)
+        data = AdminCreateSchema(
+            username=self.username,
+            firstname=self.firstname,
+            lastname=self.lastname,
+            email=self.email,
+            hashed_password=hashed_pass,
+            role=AuthRoles.SUPER_ADMIN,
+            is_active=False,
+            is_verified=True,
+            permissions=await SuperAdminRepo.get_all_permission_ids(session=self.db),
+        )
+
         # create super admin
+        super_admin = await SuperAdminRepo.create_super_admin(
+            session=self.db, data=data
+        )
+
+        if super_admin:
+            return "Super admin Seeded Successfully!"

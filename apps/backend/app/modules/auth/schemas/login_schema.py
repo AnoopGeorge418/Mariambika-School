@@ -7,12 +7,12 @@ class LoginRequestSchema(BaseModel):
     username: str
     password: str
 
-    @field_validator("password", mode="before")
+    @field_validator("password", "username", mode="before")
     @classmethod
     def validate_password(cls, v: str) -> str:
         v = v.strip()
         if not v:
-            return "Please enter the password!"
+            raise ValueError("Please enter a valid username and password!")
 
         return v
 
