@@ -7,6 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.util.typing import final
 
 from app.core.database.base import Base
+from app.modules.auth.enums.auth_permission_enum import AuthPermissions, Resources
 from app.modules.auth.enums.auth_roles_enum import AuthRoles
 from app.modules.auth.models.otp_model import Otp
 
@@ -73,3 +74,13 @@ class Admins(Base):
     otp: Mapped[list["Otp"]] = relationship(
         back_populates="admin", cascade="all, delete-orphan"
     )
+
+    def has_permission(self, resource: Resources, action: AuthPermissions) -> bool:
+        """Super admin bypasses explicit grants; everyone else needs a matching row."""
+
+        if self.role == AuthRoles.SUPER_ADMIN:
+            return True
+        return any(
+            link.permission.resource == resource and link.permission.action == action
+            for link in self.permission
+        )

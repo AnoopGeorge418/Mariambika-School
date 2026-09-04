@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.util.typing import final
 
 from app.core.database.base import Base
-from app.modules.auth.enums.otp_purpose import OtpPurpose
+from app.modules.auth.enums.otp_purpose_enum import OtpPurpose
 
 if TYPE_CHECKING:
     from app.modules.auth.models.admins_model import Admins

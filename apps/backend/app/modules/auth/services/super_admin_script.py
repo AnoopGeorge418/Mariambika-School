@@ -43,7 +43,7 @@ class CreateSuperAdmin:
     async def create_super_admin(self):
         """Creates SUPER_ADMIN only if one does not already exist."""
 
-        if await self.check_super_admin():
+        if await self.check_super_admin() == True:
             raise RuntimeError("SUPER_ADMIN already exists. Bootstrap aborted.")
 
         # create super admin
