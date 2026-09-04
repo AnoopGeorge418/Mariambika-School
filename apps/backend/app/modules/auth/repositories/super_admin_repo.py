@@ -6,11 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.modules.auth.enums.auth_permission_enum import AuthPermissions, Resources
 from app.modules.auth.enums.auth_roles_enum import AuthRoles
 from app.modules.auth.models.admins_model import Admins
+from app.modules.auth.models.joins_model import AdminPermission
 from app.modules.auth.models.permissions_model import Permissions
-from app.modules.auth.schemas.admin_schema import (
-    AdminCreateSchema,
-    AdminPermissionSchema,
-)
+from app.modules.auth.schemas.admin_schema import AdminCreateSchema
 
 
 class SuperAdminRepo:
@@ -60,11 +58,9 @@ class SuperAdminRepo:
         session.add(admin)
         await session.flush()
 
-        if admin.permission:
+        if data.permissions:
             session.add_all(
-                AdminPermissionSchema(
-                    admin_id=admin.id, permission_id=pid, assigned_by="None"
-                )
+                AdminPermission(admin_id=admin.id, permission_id=pid, assigned_by=None)
                 for pid in data.permissions
             )
 
