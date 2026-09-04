@@ -36,9 +36,11 @@ class AdminPermission(Base):
     )
 
     admin: Mapped["Admins"] = relationship(
-        foreign_keys=[admin_id], back_populates="admin_permissions"
+        foreign_keys=[admin_id], back_populates="permissions"
     )
-    permission: Mapped["Permissions"] = relationship(foreign_keys=[permission_id])
+    permission: Mapped["Permissions"] = relationship(
+        foreign_keys=[permission_id], back_populates="admin"
+    )
     assigned_by_admin: Mapped["Admins | None"] = relationship(
         foreign_keys=[assigned_by]
     )
