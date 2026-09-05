@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 @final
-class Sessions(Base):
+class Session(Base):
     """Model contains session tokens metadata"""
 
     __tablename__ = "session"
@@ -29,11 +29,15 @@ class Sessions(Base):
         index=True,
     )
 
-    hashed_refresh_token: Mapped[str] = mapped_column(String, nullable=False)
+    hashed_refresh_token: Mapped[str] = mapped_column(
+        String, nullable=False, unique=True, index=True
+    )
 
-    is_used: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    expires_at: Mapped[int] = mapped_column(Integer, nullable=False)
 
-    expires_in: Mapped[int] = mapped_column(Integer, nullable=False)
+    is_expired: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False
+    )  # True if expired
 
     user_agent: Mapped[str | None] = mapped_column(String, nullable=True)
     ip_address: Mapped[str | None] = mapped_column(String, nullable=True)

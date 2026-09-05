@@ -1,6 +1,14 @@
 from functools import lru_cache
+from typing import Literal, NamedTuple
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+SameSitePolicy = Literal["lax", "strict", "none"]
+
+
+class CookieConfig(NamedTuple):
+    samesite: SameSitePolicy
+    secure: bool
 
 
 class Settings(BaseSettings):
@@ -33,6 +41,17 @@ class Settings(BaseSettings):
     DATABASE_AUTO_FLUSH: bool
     DATABASE_ECHO_LOGS: bool
 
+    REFRESH_TOKEN_SECRET_KEY: bytes
+    REFRESH_TOKEN_EXPIRES_AT: int
+    ACCESS_TOKEN_SECRET_KEY: str
+    JWT_TOKEN_ALGORITHM: str
+    ACCESS_TOKEN_EXPIRES_IN: int
+
+    LOCAL_COOKIE_SECURE: bool
+    LOCAL_COOKIE_SAMESITE: SameSitePolicy
+    PRODUCTION_COOKIE_SECURE: bool
+    PRODUCTION_COOKIE_SAMESITE: SameSitePolicy
+
     @property
     def switch_db_using_env(self) -> str:
         if self.APP_ENVIRONMENT == "dev":
@@ -43,6 +62,17 @@ class Settings(BaseSettings):
 
         raise ValueError(
             f"Invalid APP_ENVIRONMENT: {self.APP_ENVIRONMENT}. Expected 'dev' or 'prod'."
+        )
+
+    @property
+    def switch_cookies_set_based_on_env(self) -> CookieConfig:
+        if self.APP_ENVIRONMENT == "dev":
+            return CookieConfig(
+                samesite=self.LOCAL_COOKIE_SAMESITE, secure=self.LOCAL_COOKIE_SECURE
+            )
+        return CookieConfig(
+            samesite=self.PRODUCTION_COOKIE_SAMESITE,
+            secure=self.PRODUCTION_COOKIE_SECURE,
         )
 
 
