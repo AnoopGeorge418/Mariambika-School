@@ -13,7 +13,7 @@ from app.modules.auth.models.otp_model import Otp
 
 if TYPE_CHECKING:
     from app.modules.auth.models.joins_model import AdminPermission
-    from app.modules.auth.models.session_model import Sessions
+    from app.modules.auth.models.session_model import Session
 
 
 @final
@@ -70,7 +70,7 @@ class Admins(Base):
         back_populates="admin",
         cascade="all, delete-orphan",
     )
-    sessions: Mapped[list["Sessions"]] = relationship(
+    sessions: Mapped[list["Session"]] = relationship(
         back_populates="admin", cascade="all, delete-orphan"
     )
     otp: Mapped[list["Otp"]] = relationship(
